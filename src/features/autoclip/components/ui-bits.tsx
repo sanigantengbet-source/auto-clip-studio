@@ -16,7 +16,7 @@ export function StepCard({
   children: ReactNode;
 }) {
   return (
-    <section aria-labelledby={`step-${step}`} className="rounded-3xl glass p-5 sm:p-6">
+    <section aria-labelledby={`step-${step}`} className="min-w-0 rounded-3xl glass p-5 sm:p-6">
       <div className="flex items-start gap-3">
         <span
           className={cn(
@@ -34,7 +34,7 @@ export function StepCard({
           {description ? <p className="mt-1 text-xs text-muted-foreground">{description}</p> : null}
         </div>
       </div>
-      <div className="mt-4">{children}</div>
+      <div className="mt-4 min-w-0">{children}</div>
     </section>
   );
 }

@@ -204,7 +204,7 @@ export function detectHighlights({
   candidates.sort((a, b) => b.score - a.score);
 
   const picked: Highlight[] = [];
-  const minGap = clipLength * 0.9;
+  const minGap = length * 0.9;
   for (const candidate of candidates) {
     if (picked.length >= clipCount) break;
     const overlaps = picked.some((item) => Math.abs(item.start - candidate.start) < minGap);

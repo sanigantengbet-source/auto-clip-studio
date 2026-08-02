@@ -35,10 +35,57 @@ export interface PipelineOutput {
 }
 
 const EXT_ARGS: Record<ClipConfig["format"], { ext: string; args: string[] }> = {
-  mp4: { ext: "mp4", args: ["-c:v", "libx264", "-preset", "ultrafast", "-crf", "26", "-pix_fmt", "yuv420p", "-c:a", "aac", "-b:a", "128k"] },
-  webm: { ext: "webm", args: ["-c:v", "libvpx", "-b:v", "1M", "-c:a", "libvorbis"] },
+  mp4: {
+    ext: "mp4",
+    args: [
+      "-c:v",
+      "libx264",
+      "-preset",
+      "ultrafast",
+      "-tune",
+      "zerolatency",
+      "-crf",
+      "28",
+      "-g",
+      "60",
+      "-pix_fmt",
+      "yuv420p",
+      "-c:a",
+      "aac",
+      "-b:a",
+      "96k",
+      "-ac",
+      "1",
+      "-movflags",
+      "+faststart",
+    ],
+  },
+  webm: {
+    ext: "webm",
+    args: [
+      "-c:v",
+      "libvpx",
+      "-b:v",
+      "1M",
+      "-deadline",
+      "realtime",
+      "-cpu-used",
+      "8",
+      "-c:a",
+      "libvorbis",
+      "-ac",
+      "1",
+    ],
+  },
   gif: { ext: "gif", args: ["-an", "-loop", "0"] },
 };
+
+/**
+ * Seconds of extra decode before the requested start. Seeking before `-i` is a
+ * fast keyframe seek, so we land slightly early and trim the remainder with an
+ * accurate output-side `-ss` — fast *and* frame accurate.
+ */
+const SEEK_PREROLL = 1.2;
 
 class Cancelled extends Error {
   constructor() {

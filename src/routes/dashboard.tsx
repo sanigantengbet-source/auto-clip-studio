@@ -69,10 +69,11 @@ function DashboardLayout() {
   };
 
   return (
-    <div className="min-h-screen bg-background">
+    <div className="min-h-screen overflow-x-hidden bg-background">
       <div className="pointer-events-none fixed inset-0 grid-bg opacity-60" aria-hidden />
 
-      <div className="relative mx-auto flex w-full max-w-[110rem]">
+      <div className="relative mx-auto flex w-full max-w-[110rem] overflow-x-hidden">
+
         <aside className="sticky top-0 hidden h-screen w-64 shrink-0 flex-col border-r border-border p-4 lg:flex">
           <SidebarContent onNavigate={() => undefined} />
         </aside>
@@ -180,12 +181,18 @@ function SidebarContent({ onNavigate }: { onNavigate: () => void }) {
         ))}
       </nav>
 
-      <div className="mt-auto rounded-3xl glass p-4">
-        <p className="text-xs font-medium">Local-first</p>
-        <p className="mt-1 text-xs leading-relaxed text-muted-foreground">
-          Video decoding and export happen on this device. Nothing is uploaded.
+      <div className="mt-auto flex flex-col gap-3">
+        <div className="rounded-3xl glass p-4">
+          <p className="text-xs font-medium">Local-first</p>
+          <p className="mt-1 text-xs leading-relaxed text-muted-foreground">
+            Video decoding and export happen on this device. Nothing is uploaded.
+          </p>
+        </div>
+        <p className="px-2 text-[11px] leading-relaxed text-muted-foreground">
+          Developed by <span className="font-medium text-foreground">SANN404 FORUM GROUP</span>
         </p>
       </div>
+
     </div>
   );
 }

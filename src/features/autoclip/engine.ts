@@ -1,6 +1,12 @@
 import type { FFmpeg } from "@ffmpeg/ffmpeg";
 
-const CORE_BASE = "https://unpkg.com/@ffmpeg/core@0.12.10/dist/umd";
+// The bundled worker is a module worker, so it can only `import()` the core.
+// That means the ESM build of ffmpeg-core is required — the UMD build fails
+// with "failed to import ffmpeg-core.js".
+const CORE_BASES = [
+  "https://unpkg.com/@ffmpeg/core@0.12.10/dist/esm",
+  "https://cdn.jsdelivr.net/npm/@ffmpeg/core@0.12.10/dist/esm",
+];
 
 let enginePromise: Promise<FFmpeg> | null = null;
 

@@ -252,14 +252,18 @@ function buildArgs({
   withSubtitles,
 }: ArgsInput): string[] {
   const fps = config.format === "gif" ? 12 : config.fps;
+  // Drop frames first so crop/scale only run on frames we actually keep.
   const chain = [
-    `crop='if(gte(iw/ih,${ratio}),ih*${ratio},iw)':'if(gte(iw/ih,${ratio}),ih,iw/${ratio})'`,
-    `scale=${width}:${height}`,
     `fps=${fps}`,
+    `crop='if(gte(iw/ih,${ratio}),ih*${ratio},iw)':'if(gte(iw/ih,${ratio}),ih,iw/${ratio})'`,
+    `scale=${width}:${height}:flags=fast_bilinear`,
   ];
   if (withSubtitles) chain.push("subtitles=sub.ass");
 
-  const args = ["-ss", start.toFixed(3), "-t", duration.toFixed(3), "-i", inputName];
+  // Fast keyframe seek before -i, accurate trim after it.
+  const coarse = Math.max(0, start - SEEK_PREROLL);
+  const fine = start - coarse;
+  const args = ["-ss", coarse.toFixed(3), "-i", inputName];
   const watermark = config.watermark;
 
   if (watermark.dataUrl) {
@@ -269,7 +273,7 @@ function buildArgs({
     const overlay = overlayPosition(watermark.position, margin);
     args.push(
       "-filter_complex",
-      `[0:v]${chain.join(",")}[base];[1:v]scale=${logoWidth}:-1,format=rgba,colorchannelmixer=aa=${watermark.opacity.toFixed(2)}[wm];[base][wm]overlay=${overlay}[v]`,
+      `[0:v]${chain.join(",")}[base];[1:v]scale=${logoWidth}:-1,format=rgba,colorchannelmixer=aa=${watermark.opacity.toFixed(2)}[wm];[base][wm]overlay=${overlay}:shortest=1[v]`,
       "-map",
       "[v]",
     );
@@ -278,6 +282,9 @@ function buildArgs({
     args.push("-vf", chain.join(","));
   }
 
+  if (fine > 0.001) args.push("-ss", fine.toFixed(3));
+  args.push("-t", duration.toFixed(3));
+  args.push("-sn", "-dn", "-map_metadata", "-1", "-threads", "0");
   args.push(...EXT_ARGS[config.format].args, "-y", output);
   return args;
 }

@@ -218,7 +218,13 @@ function LandingPage() {
 
       <footer className="border-t border-border py-10">
         <div className="mx-auto flex max-w-6xl flex-col items-center justify-between gap-4 px-5 text-sm text-muted-foreground sm:flex-row">
-          <p>© {new Date().getFullYear()} AutoClip AI — processed locally, always.</p>
+          <div className="text-center sm:text-left">
+            <p>© {new Date().getFullYear()} AutoClip AI — processed locally, always.</p>
+            <p className="mt-1 text-xs">
+              Developed by <span className="font-medium text-foreground">SANN404 FORUM GROUP</span>
+            </p>
+          </div>
+
           <nav aria-label="Footer" className="flex items-center gap-5">
             <Link className="transition-colors hover:text-foreground" to="/about">About</Link>
             <Link className="transition-colors hover:text-foreground" to="/dashboard/settings">Settings</Link>

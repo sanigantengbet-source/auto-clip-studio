@@ -163,11 +163,14 @@ export function detectHighlights({
   clipLength,
   clipCount,
 }: ScoreInput): Highlight[] {
-  const step = Math.max(1, Math.round(clipLength / 4));
+  // Never ask for a clip longer than the source video.
+  const safeDuration = Number.isFinite(duration) && duration > 0 ? duration : clipLength;
+  const length = Math.max(1, Math.min(clipLength, safeDuration));
+  const step = Math.max(1, Math.round(length / 4));
   const candidates: Highlight[] = [];
 
-  for (let start = 0; start + clipLength <= Math.max(clipLength, duration); start += step) {
-    const end = start + clipLength;
+  for (let start = 0; start + length <= Math.max(length, safeDuration); start += step) {
+    const end = Math.min(start + length, safeDuration);
     const from = Math.floor(start / audio.bucketSeconds);
     const to = Math.max(from + 1, Math.floor(end / audio.bucketSeconds));
 

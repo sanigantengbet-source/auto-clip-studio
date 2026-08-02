@@ -188,11 +188,11 @@ function AutoClipPage() {
         </Button>
       </header>
 
-      <div className="mt-8 grid gap-4 lg:grid-cols-[1.4fr_1fr]">
-        <div className="flex flex-col gap-4">
+      <div className="mt-8 grid min-w-0 gap-4 lg:grid-cols-[minmax(0,1.4fr)_minmax(0,1fr)]">
+        <div className="flex min-w-0 flex-col gap-4">
           <StepCard step={1} title="Source" description="Paste a YouTube link for metadata, then drop the video file." complete={Boolean(source)}>
-            <div className="flex flex-col gap-3 sm:flex-row">
-              <div className="relative flex-1">
+            <div className="flex min-w-0 flex-col gap-3 sm:flex-row">
+              <div className="relative min-w-0 flex-1">
                 <Youtube className="pointer-events-none absolute top-1/2 left-3 size-4 -translate-y-1/2 text-muted-foreground" />
                 <Input
                   value={url}
@@ -243,19 +243,19 @@ function AutoClipPage() {
                   <img
                     src={source.thumbnail}
                     alt=""
-                    className="h-14 w-24 rounded-xl object-cover"
+                    className="h-14 w-24 shrink-0 rounded-xl object-cover"
                     loading="lazy"
                     width={480}
                     height={360}
                   />
                 ) : (
-                  <span className="flex h-14 w-24 items-center justify-center rounded-xl bg-muted">
+                  <span className="flex h-14 w-24 shrink-0 items-center justify-center rounded-xl bg-muted">
                     <FileVideo className="size-5 text-muted-foreground" />
                   </span>
                 )}
                 <div className="min-w-0 flex-1">
                   <p className="truncate text-sm font-medium">{source.title}</p>
-                  <p className="mt-0.5 text-xs text-muted-foreground">
+                  <p className="mt-0.5 truncate text-xs text-muted-foreground">
                     {source.kind === "youtube" ? "YouTube metadata" : "Local file"}
                     {source.duration ? ` · ${formatDuration(source.duration)}` : ""}
                     {source.fileSize ? ` · ${formatBytes(source.fileSize)}` : ""}
@@ -264,7 +264,7 @@ function AutoClipPage() {
                 <Button
                   variant="ghost"
                   size="icon"
-                  className="rounded-full"
+                  className="shrink-0 rounded-full"
                   aria-label="Clear source"
                   onClick={() => useAutoClipStore.getState().setSource(null, null)}
                 >
@@ -525,7 +525,7 @@ function AutoClipPage() {
           </StepCard>
         </div>
 
-        <aside className="flex flex-col gap-4 lg:sticky lg:top-24 lg:self-start">
+        <aside className="flex min-w-0 flex-col gap-4 lg:sticky lg:top-24 lg:self-start">
           <div className="rounded-3xl glass p-5">
             <div className="flex items-center justify-between">
               <p className="text-sm font-semibold tracking-tight">Pipeline</p>

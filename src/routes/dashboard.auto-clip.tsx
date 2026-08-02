@@ -162,7 +162,12 @@ function AutoClipPage() {
         toast.info("Generation cancelled.");
         return;
       }
-      const message = cause instanceof Error ? cause.message : "Processing failed.";
+      const message =
+        cause instanceof Error
+          ? cause.message
+          : typeof cause === "string" && cause.trim()
+            ? cause
+            : "Processing failed.";
       useAutoClipStore.getState().setStage("error");
       useAutoClipStore.getState().setError(message);
       toast.error(message);

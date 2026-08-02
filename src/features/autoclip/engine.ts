@@ -1,6 +1,12 @@
 import type { FFmpeg } from "@ffmpeg/ffmpeg";
 
-const CORE_BASE = "https://unpkg.com/@ffmpeg/core@0.12.10/dist/umd";
+// The bundled worker is a module worker, so it can only `import()` the core.
+// That means the ESM build of ffmpeg-core is required — the UMD build fails
+// with "failed to import ffmpeg-core.js".
+const CORE_BASES = [
+  "https://unpkg.com/@ffmpeg/core@0.12.10/dist/esm",
+  "https://cdn.jsdelivr.net/npm/@ffmpeg/core@0.12.10/dist/esm",
+];
 
 let enginePromise: Promise<FFmpeg> | null = null;
 
@@ -21,11 +27,21 @@ export async function getEngine(onLog?: LogHandler): Promise<FFmpeg> {
         import("@ffmpeg/util"),
       ]);
       const engine = new FFmpegClass();
-      await engine.load({
-        coreURL: await toBlobURL(`${CORE_BASE}/ffmpeg-core.js`, "text/javascript"),
-        wasmURL: await toBlobURL(`${CORE_BASE}/ffmpeg-core.wasm`, "application/wasm"),
-      });
-      return engine;
+      let lastError: unknown = null;
+      for (const base of CORE_BASES) {
+        try {
+          await engine.load({
+            coreURL: await toBlobURL(`${base}/ffmpeg-core.js`, "text/javascript"),
+            wasmURL: await toBlobURL(`${base}/ffmpeg-core.wasm`, "application/wasm"),
+          });
+          return engine;
+        } catch (error) {
+          lastError = error;
+        }
+      }
+      throw new Error(
+        `Could not start the video engine. ${lastError instanceof Error ? lastError.message : String(lastError ?? "")}`.trim(),
+      );
     })().catch((error: unknown) => {
       enginePromise = null;
       throw error;
